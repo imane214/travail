@@ -1,0 +1,48 @@
+
+var dc = {};
+
+// TODO: STEP 0: Déclarez l'URL des catégories de menu
+dc.allCategoriesUrl = "https://davids-restaurant.herokuapp.com/categories.json";
+
+// TODO: STEP 1: Charger le code HTML de la page d'accueil
+dc.loadHomeHtml = function () {
+  // Utilisez AJAX pour charger le contenu de la page d'accueil
+  $ajaxUtils.sendGetRequest(
+    "snippets/home-snippet.html",
+    function (homeHtml) {
+      // TODO: STEP 2: Obtenir les catégories du menu
+      $ajaxUtils.sendGetRequest(
+        dc.allCategoriesUrl,
+        function (categories) {
+          // TODO: STEP 3: Sélectionnez une catégorie aléatoire
+          var randomCategoryIndex = Math.floor(
+            Math.random() * categories.length
+          );
+          var randomCategoryShortName = categories[randomCategoryIndex].short_name;
+
+          // TODO: STEP 4: Insérez le nom court de la catégorie dans le HTML
+          var homeHtmlToInsert = insertProperty(
+            homeHtml,
+            "randomCategoryShortName",
+            randomCategoryShortName
+          );
+
+          // Insérez le HTML modifié dans la page d'accueil
+          document.querySelector("#main-content").innerHTML = homeHtmlToInsert;
+        },
+        true
+      );
+    },
+    false // Non JSON (simple HTML)
+  );
+};
+
+// Fonction pour insérer une propriété dans une chaîne de caractères (utile pour remplacer les placeholders)
+function insertProperty(string, propName, propValue) {
+  var propToReplace = "{{" + propName + "}}";
+  var newString = string.replace(new RegExp(propToReplace, "g"), propValue);
+  return newString;
+}
+
+// Chargez la page d'accueil au démarrage de l'application
+document.addEventListener("DOMContentLoaded", dc.loadHomeHtml);
